@@ -50,29 +50,21 @@ This project visualizes various aspects of the cities of Fort Portal and Jinja, 
 
 ## File Structure
 
-\`\`\`
-city-profile-visualization/
-├── data/
+.
+├── index.html          # Main HTML file
+├── script.js           # Main JavaScript file
+├── data/               # Directory containing GeoJSON files
+│   ├── samplehospitals.js
 │   ├── jinja_health_data.geojson
 │   ├── jinja_schools_data.geojson
 │   ├── jinja_tourism_data.geojson
 │   ├── fort_health_data.geojson
 │   ├── fort_school_data.geojson
-│   ├── fort_tourism_data.geojson
-│   └── samplehospitals.js
-├── images/
+│   └── fort_tourism_data.geojson
+├── images/             # Directory containing building images
 │   ├── JinjaBuildingsPNGs/
-│   │   ├── 2016.png
-│   │   ├── 2017.png
-│   │   └── ...
-│   ├── FortBuildingsPNGs/
-│   │   ├── 2016.png
-│   │   ├── 2017.png
-│   │   └── ...
-├── index.html
-├── script.js
-└── README.md
-\`\`\`
+│   └── FortBuildingsPNGs/
+└── README.md           # This file
 
 ## Data Format
 
