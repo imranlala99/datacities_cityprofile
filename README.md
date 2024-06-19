@@ -50,7 +50,7 @@ This project visualizes various aspects of the cities of Fort Portal and Jinja, 
 
 ## File Structure
 
-.
+```
 ├── index.html          # Main HTML file
 ├── script.js           # Main JavaScript file
 ├── data/               # Directory containing GeoJSON files
@@ -65,6 +65,7 @@ This project visualizes various aspects of the cities of Fort Portal and Jinja, 
 │   ├── JinjaBuildingsPNGs/
 │   └── FortBuildingsPNGs/
 └── README.md           # This file
+```
 
 ## Data Format
 
@@ -72,7 +73,7 @@ This project visualizes various aspects of the cities of Fort Portal and Jinja, 
 
 The GeoJSON files should contain features with properties relevant to hospitals, schools, and tourism. Example structure:
 
-\`\`\`json
+```
 {
     "type": "FeatureCollection",
     "features": [
@@ -91,7 +92,7 @@ The GeoJSON files should contain features with properties relevant to hospitals,
         ...
     ]
 }
-\`\`\`
+```
 
 ### Images
 
@@ -105,12 +106,12 @@ Images should be organized by city and year in respective folders.
 
 Include the following scripts in your \`index.html\`:
 
-\`\`\`html
+```
 <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-\`\`\`
+```
 
 ## License
 
