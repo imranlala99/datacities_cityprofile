@@ -8,6 +8,8 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+
     <style>
         #slider {
             margin: 20px 0;
@@ -20,6 +22,10 @@
             width: 400px;
             height: 400px;
         }
+        body {
+            font-family: 'Roboto', sans-serif;
+        }
+
     </style>
 </head>
 <body class="bg-gray-100 font-sans leading-normal tracking-normal">
@@ -141,6 +147,7 @@
             <div id="Schools">
                 <h2 class="text-2xl font-bold mb-4">Scools</h2>
                 <div id="schoolMap"></div>
+                <div style="height: 10px;"></div>
                 <div id="schoolProfileContent" class="flex justify-between items-center">
                     <table id="schoolTable" class="display" style="flex: 1">
                         <thead>
@@ -160,6 +167,8 @@
             <div id="Tourism">
                 <h2 class="text-2xl font-bold mb-4">Tourism</h2>
                 <div id="tourismMap"></div>
+                <div style="height: 10px;"></div>
+
                 <div id="tourismProfileContent" class="flex justify-between items-center">
                     <table id="tourismTable" class="display" style="flex: 1">
                         <thead>
@@ -193,6 +202,7 @@
     <script src ="data/fort_buildings.js"></script>
     <script src ="data/jinja_img_paths.js"></script>
     <script src ="data/fort_img_paths.js"></script>
+    <script src ="data/city_objects.js"></script>
     <script src="script.js"></script>
 </body>
 </html>

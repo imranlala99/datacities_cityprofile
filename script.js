@@ -1,11 +1,9 @@
-
 document.addEventListener("DOMContentLoaded", function() {
     const citySelect = document.getElementById("city-select");
-    const cityProfileContent = document.getElementById("city-profile-content");
     const dataSourceLink = document.getElementById("data-source-link");
-    const hospitalMap = L.map('hospitalMap').setView([0.49649,33.19050], 13); // Initial view, can be updated dynamically
-    const schoolMap = L.map('schoolMap').setView([0.49649,33.19050], 13); // Initial view, can be updated dynamically
-    const tourismMap = L.map('tourismMap').setView([0.49649,33.19050], 13); // Initial view, can be updated dynamically
+    const hospitalMap = L.map('hospitalMap').setView([0.49649, 33.19050], 13);
+    const schoolMap = L.map('schoolMap').setView([0.49649, 33.19050], 13);
+    const tourismMap = L.map('tourismMap').setView([0.49649, 33.19050], 13);
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 19,
@@ -17,68 +15,18 @@ document.addEventListener("DOMContentLoaded", function() {
         maxZoom: 19,
     }).addTo(tourismMap);
 
-    const cityData = {
-        city1: {
-            name: "Jinja",
-            location: [0.49649,33.19050],
-            graphData: {
-                datasets: [{
-                    label: 'Jinja Buildings',
-                    data: jinja_buildings_data,
-                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                    borderColor: 'rgba(75, 192, 192, 1)',
-                    borderWidth: 1
-                }]
-            },
-            image_paths: jinja_image_paths,
-            healthData: 'data/jinja_health_data.geojson',
-            schoolData: 'data/jinja_schools_data.geojson',
-            tourismData: 'data/jinja_tourism_data.geojson',
-            dataSource: "https://example.com/city1-data"
-        },
-        city2: {
-            name: "Fort Portal",
-            location: [0.65460, 30.25485],
-            graphData: {
-                label: 'Fort Portal Buildings',
-                datasets: [{
-                    label: 'City 2 Dataset',
-                    data: fort_buildings_data,
-                    backgroundColor: 'rgba(153, 102, 255, 0.2)',
-                    borderColor: 'rgba(153, 102, 255, 1)',
-                    borderWidth: 1
-                }]
-            },
-            image_paths: fort_image_paths,
-            healthData: 'data/fort_health_data.geojson',
-            schoolData: 'data/fort_school_data.geojson',
-            tourismData: 'data/fort_tourism_data.geojson',
-
-            dataSource: "https://example.com/city2-data"
-        }
-    };
-
     let slideIndex = 0;
     let slideInterval;
     const fileNames = ["2016", "2017", "2018", "2019", "2020", "2021", "2022", "2023"];
     
     function loadimages(paths) {
-        // for each div in the slider class, edit the src to be the corresponding image indexed in the path array
         let slider = document.getElementsByClassName("slides");
-        if (!slider) {
-            console.error("No slider elements found");
-            return;
-        }
         for (let i = 0; i < paths.length; i++) {
-            if (!paths[i] || !slider[i]) {
-                console.error(`Invalid path or slider element at index ${i}`);
-                continue;
-            }
-
-            // reassign the src property of the image element
+            if (!paths[i] || !slider[i]) continue;
             slider[i].querySelector("img").src = paths[i];
         }
     }
+    
     function showSlides() {
         let slides = document.getElementsByClassName("slides");
         for (let i = 0; i < slides.length; i++) {
@@ -105,12 +53,35 @@ document.addEventListener("DOMContentLoaded", function() {
         showSlides();
     }
 
-    
+    function onEachFeature(feature, layer) {
+        if (feature.properties && feature.properties.name) {
+            layer.bindPopup("Name: " + feature.properties.name + "<br>" +
+                            "Type: " + feature.properties.amenity + "<br>" +
+                            "Admin 4 Name: " + feature.properties.admin4Name_en);
+            layer.on({
+                mouseover: function(e) {
+                    layer.openPopup();
+                },
+                mouseout: function(e) {
+                    layer.closePopup();
+                }
+            });
+        }
+    }
+
+    function clearLayers(map) {
+        map.eachLayer(function(layer) {
+            if (layer instanceof L.GeoJSON) {
+                map.removeLayer(layer);
+            }
+        });
+    }
+
     function loadCityData(city) {
         const cityobject = cityData[city];
         const data = cityobject.graphData.datasets[0].data;
         
-        // initialize images
+        // Initialize images
         loadimages(cityobject.image_paths);
 
         // Plotly graph
@@ -142,13 +113,13 @@ document.addEventListener("DOMContentLoaded", function() {
                 rangemode: 'normal'
             },
             legend: {
-                orientation: 'v',  // Change to vertical orientation
-                x: 0.06,  // Positioning legend within the plot area
+                orientation: 'v',
+                x: 0.06,
                 y: 0.9,
                 xanchor: 'left',
                 yanchor: 'top',
                 font: {
-                    size: 10  // Reduce font size
+                    size: 10
                 }
             },
             margin: {
@@ -157,7 +128,6 @@ document.addEventListener("DOMContentLoaded", function() {
                 t: 50,
                 b: 50
             }
-
         };
         Plotly.react(ctx, [trace1, trace2], layout);
 
@@ -169,19 +139,21 @@ document.addEventListener("DOMContentLoaded", function() {
         // Update data source link
         dataSourceLink.href = cityobject.dataSource;
 
-        // Update the hospital div
+        // Update the hospital map
         hospitalMap.setView([cityobject.location[0], cityobject.location[1]], 11);
+        clearLayers(hospitalMap);
         fetch(cityobject.healthData)
         .then(response => response.json())
         .then(data => {
-            // Add GeoJSON layer to the map
-            L.geoJSON(data).addTo(hospitalMap)
+            var geojson = L.geoJSON(data, {
+                onEachFeature: onEachFeature
+            }).addTo(hospitalMap);
             
             // Populate DataTable
             const tableData = data.features.map(feature =>
-                    [feature.properties.name,
-                    feature.properties.amenity,
-                    feature.properties.admin4Name_en]);
+                [feature.properties.name,
+                feature.properties.amenity,
+                feature.properties.admin4Name_en]);
             const dataTable = $('#hospitalTable').DataTable();
             dataTable.clear().rows.add(tableData).draw();
             
@@ -200,25 +172,25 @@ document.addEventListener("DOMContentLoaded", function() {
             Plotly.react(ctx, pieData);
         });
 
-
-
-        // Update the school div
+        // Update the school map
         schoolMap.setView([cityobject.location[0], cityobject.location[1]], 11);
+        clearLayers(schoolMap);
         fetch(cityobject.schoolData)
         .then(response => response.json())
         .then(data => {
-            // Add GeoJSON layer to the map
-            L.geoJSON(data).addTo(schoolMap)
+            const geojson = L.geoJSON(data, {
+                onEachFeature: onEachFeature
+            }).addTo(schoolMap);
 
             // Populate DataTable
             const tableData = data.features.map(feature =>
-                    [feature.properties.name,
-                    feature.properties.amenity,
-                    feature.properties["addr:city"]]);
+                [feature.properties.name,
+                feature.properties.amenity,
+                feature.properties["addr:city"]]);
             const dataTable = $('#schoolTable').DataTable();
             dataTable.clear().rows.add(tableData).draw();
 
-            // Create hospital pie chart
+            // Create school pie chart
             const amenityCounts = data.features.reduce((acc, feature) => {
                 const amenity = feature.properties.amenity;
                 acc[amenity] = (acc[amenity] || 0) + 1;
@@ -233,22 +205,24 @@ document.addEventListener("DOMContentLoaded", function() {
             Plotly.react(ctx, pieData);
         });
         
-        // Update the tourism div
+        // Update the tourism map
         tourismMap.setView([cityobject.location[0], cityobject.location[1]], 11);
+        clearLayers(tourismMap);
         fetch(cityobject.tourismData)
         .then(response => response.json())
         .then(data => {
-            // Add GeoJSON layer to the map
-            L.geoJSON(data).addTo(tourismMap)
+            const geojson = L.geoJSON(data, {
+                onEachFeature: onEachFeature
+            }).addTo(tourismMap);
 
             // Populate DataTable
             const tableData = data.features.map(feature =>
-                    [feature.properties.name,
-                    feature.properties.fclass]);
+                [feature.properties.name,
+                feature.properties.fclass]);
             const dataTable = $('#tourismTable').DataTable();
-            dataTable.clear().rows.add(tableData).draw()
+            dataTable.clear().rows.add(tableData).draw();
 
-            // Create school pie chart
+            // Create tourism pie chart
             const fclassCounts = data.features.reduce((acc, feature) => {
                 const fclass = feature.properties.fclass;
                 acc[fclass] = (acc[fclass] || 0) + 1;
@@ -262,7 +236,6 @@ document.addEventListener("DOMContentLoaded", function() {
             const ctx = document.getElementById('tourismPieChart');
             Plotly.react(ctx, pieData);
         });
-
     }
 
     citySelect.addEventListener("change", function() {
@@ -281,63 +254,4 @@ document.addEventListener("DOMContentLoaded", function() {
     window.startSlides = startSlides;
     window.stopSlides = stopSlides;
     window.currentSlide = currentSlide;
-
-
 });
-
-
-/**
-            // Add hover interaction
-            $('#hospitalTable tbody').on('mouseenter', 'tr', function() {
-                const rowData = dataTable.row(this).data();
-                highlightFeature(rowData, true);
-            });
-
-            $('#hospitalTable tbody').on('mouseleave', 'tr', function() {
-                const rowData = dataTable.row(this).data();
-                highlightFeature(rowData, false);
-            });
-
-            function onEachFeature(feature, layer) {
-                layer.on({
-                    mouseover: function() {
-                        highlightFeature(feature.properties, true);
-                        highlightTableRow(feature.properties.name, true);
-                    },
-                    mouseout: function() {
-                        highlightFeature(feature.properties, false);
-                        highlightTableRow(feature.properties.name, false);
-                    }
-                });
-            }
-
-            function highlightFeature(props, highlight) {
-                geojsonLayer.eachLayer(layer => {
-                    if (layer.feature.properties.name === props.name) {
-                        if (highlight) {
-                            layer.setStyle({
-                                color: 'yellow',
-                                weight: 5
-                            });
-                        } else {
-                            geojsonLayer.resetStyle(layer);
-                        }
-                    }
-                });
-            }
-
-            function highlightTableRow(name, highlight) {
-                $('#hospitalTable tbody tr').each(function() {
-                    const rowData = dataTable.row(this).data();
-                    if (rowData.name === name) {
-                        if (highlight) {
-                            $(this).addClass('highlight');
-                        } else {
-                            $(this).removeClass('highlight');
-                        }
-                    }
-                });
-            }
-        })
-        .catch(error => console.error('Error fetching the GeoJSON data:', error)); */
-        
