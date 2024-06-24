@@ -19,7 +19,7 @@ document.addEventListener("DOMContentLoaded", function() {
     let slideInterval;
     const fileNames = ["2016", "2017", "2018", "2019", "2020", "2021", "2022", "2023"];
     
-    function loadimages(paths) {
+    function loadImages(paths) {
         let slider = document.getElementsByClassName("slides");
         for (let i = 0; i < paths.length; i++) {
             if (!paths[i] || !slider[i]) continue;
@@ -77,12 +77,22 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     }
 
+    function changetext(city) {
+        const textpaths = cityData[city].text
+        document.getElementById("building-viz-title").innerText = textpaths.building_visualization_title;
+
+    }
+
     function loadCityData(city) {
+        console.log("Loading data for city:", city);
         const cityobject = cityData[city];
         const data = cityobject.graphData.datasets[0].data;
-        
+
         // Initialize images
-        loadimages(cityobject.image_paths);
+        loadImages(cityobject.image_paths);
+
+        // Change text content
+        changetext(city);
 
         // Plotly graph
         const ctx = document.getElementById('cityGraph');
@@ -119,7 +129,8 @@ document.addEventListener("DOMContentLoaded", function() {
                 xanchor: 'left',
                 yanchor: 'top',
                 font: {
-                    size: 10
+                    size: 10,
+                    family: 'Roboto, sans-serif'
                 }
             },
             margin: {
@@ -127,6 +138,9 @@ document.addEventListener("DOMContentLoaded", function() {
                 r: 50,
                 t: 50,
                 b: 50
+            },
+            font: {
+                family: 'Roboto, sans-serif'
             }
         };
         Plotly.react(ctx, [trace1, trace2], layout);
@@ -148,6 +162,7 @@ document.addEventListener("DOMContentLoaded", function() {
             var geojson = L.geoJSON(data, {
                 onEachFeature: onEachFeature
             }).addTo(hospitalMap);
+            console.log("Hospital data loaded for", city);
             
             // Populate DataTable
             const tableData = data.features.map(feature =>
@@ -169,7 +184,9 @@ document.addEventListener("DOMContentLoaded", function() {
                 type: 'pie'
             }];
             const ctx = document.getElementById('hospitalPieChart');
-            Plotly.react(ctx, pieData);
+            Plotly.react(ctx, pieData, {
+                font: { family: 'Roboto, sans-serif' }
+            });
         });
 
         // Update the school map
@@ -181,6 +198,7 @@ document.addEventListener("DOMContentLoaded", function() {
             const geojson = L.geoJSON(data, {
                 onEachFeature: onEachFeature
             }).addTo(schoolMap);
+            console.log("School data loaded for", city);
 
             // Populate DataTable
             const tableData = data.features.map(feature =>
@@ -202,7 +220,9 @@ document.addEventListener("DOMContentLoaded", function() {
                 type: 'pie'
             }];
             const ctx = document.getElementById('schoolPieChart');
-            Plotly.react(ctx, pieData);
+            Plotly.react(ctx, pieData, {
+                font: { family: 'Roboto, sans-serif' }
+            });
         });
         
         // Update the tourism map
@@ -214,6 +234,7 @@ document.addEventListener("DOMContentLoaded", function() {
             const geojson = L.geoJSON(data, {
                 onEachFeature: onEachFeature
             }).addTo(tourismMap);
+            console.log("Tourism data loaded for", city);
 
             // Populate DataTable
             const tableData = data.features.map(feature =>
@@ -234,7 +255,9 @@ document.addEventListener("DOMContentLoaded", function() {
                 type: 'pie'
             }];
             const ctx = document.getElementById('tourismPieChart');
-            Plotly.react(ctx, pieData);
+            Plotly.react(ctx, pieData, {
+                font: { family: 'Roboto, sans-serif' }
+            });
         });
     }
 
