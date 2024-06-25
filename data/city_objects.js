@@ -13,6 +13,7 @@ const cityData = {
             }]
         },
         image_paths: jinja_image_paths,
+        shapefile: 'data/jinja_shapefile.geojson',
         healthData: 'data/jinja_health_data.geojson',
         schoolData: 'data/jinja_schools_data.geojson',
         tourismData: 'data/jinja_tourism_data.geojson',
@@ -42,6 +43,7 @@ const cityData = {
             }]
         },
         image_paths: fort_image_paths,
+        shapefile: 'data/fortportal_shapefile.geojson',
         healthData: 'data/fort_health_data.geojson',
         schoolData: 'data/fort_school_data.geojson',
         tourismData: 'data/fort_tourism_data.geojson',

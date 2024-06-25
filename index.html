@@ -12,6 +12,15 @@
         body, table, .plotly, .dataTables_wrapper {
             font-family: 'Roboto', sans-serif;
         }
+        h2 {
+            font-weight: bold;
+            font-size: 24px;
+
+        }
+        h13 {
+            font-weight: 500;
+            font-size: 18px;
+        }
         #slider {
             margin: 20px 0;
         }
@@ -40,6 +49,24 @@
         nav a:hover {
             color: #3498db;
         }
+        .icon {
+            width: 32px;
+            height: 32px;
+            background-size: cover;
+        }
+        .info {
+            padding: 6px 8px;
+            font: 14px/16px Arial, Helvetica, sans-serif;
+            background: white;
+            background: rgba(255,255,255,0.8);
+            box-shadow: 0 0 15px rgba(0,0,0,0.2);
+            border-radius: 5px;
+        }
+        .info h4 {
+            margin: 0 0 5px;
+            color: #777;
+        }
+
     </style>
 </head>
 <body class="bg-gray-100 font-sans leading-normal tracking-normal">
@@ -75,9 +102,26 @@
             <div id="Buildings">
                 <h2 id="buildings-title">Buildings</h2>
                 <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 20px;">
-                    <div id="cityGraph" style="flex: 1;"></div>
+                    <div id="graph-table-container" style="flex: 1;">
+                        <div id="cityGraph"></div>
+                        <table id="cityTable" class="display" style="width:100%">
+                            <thead>
+                                <tr>
+                                    <th>Year</th>
+                                    <th>Buildings Area (sq km)</th>
+                                    <th>Building Count</th>
+                                    <th>Area Growth Rate</th>
+                                    <th>Count Growth Rate</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Table content will be loaded dynamically -->
+                            </tbody>
+                        </table>
+        
+                    </div>
                     <div id="slideMap" style="flex: 1;">
-                        <h2 id="building-viz-title"></h2>
+                        <h13 id="building-viz-title"></h13>
                         <style>
                             .slider {
                                 max-width: 600px;
@@ -135,22 +179,9 @@
                             <input type="range" id="slideRange" min="1" max="8" value="1" class="range-slider" oninput="currentSlide(this.value)">
                         </div>
                         <div class="file-name" id="file-name">2016</div>
+                        <h3 id="building-viz-description"></h3>
                     </div>
                 </div>
-                <table id="cityTable" class="display" style="width:100%">
-                    <thead>
-                        <tr>
-                            <th>Year</th>
-                            <th>Buildings Area (sq km)</th>
-                            <th>Building Count</th>
-                            <th>Area Growth Rate</th>
-                            <th>Count Growth Rate</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <!-- Table content will be loaded dynamically -->
-                    </tbody>
-                </table>
             </div>
             <div id="Hospitals">
                 <h2>Hospitals</h2>
@@ -238,10 +269,24 @@
                 e.preventDefault();
 
                 document.querySelector(this.getAttribute('href')).scrollIntoView({
-                    behavior: 'smooth'
+                    behavior: 'smooth',
+                    block: "start",
+                    inline: "nearest"
                 });
             });
         });
+        function scrollToTargetAdjusted(){
+                var element = document.getElementById('targetElement');
+                var headerOffset = 45;
+                var elementPosition = element.getBoundingClientRect().top;
+                var offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+            
+                window.scrollTo({
+                    top: offsetPosition,
+                    behavior: "smooth"
+                });
+            }
+
     </script>
 
 </body>

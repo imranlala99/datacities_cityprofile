@@ -4,7 +4,11 @@ document.addEventListener("DOMContentLoaded", function() {
     const hospitalMap = L.map('hospitalMap').setView([0.49649, 33.19050], 13);
     const schoolMap = L.map('schoolMap').setView([0.49649, 33.19050], 13);
     const tourismMap = L.map('tourismMap').setView([0.49649, 33.19050], 13);
+    const shapefileMap = L.map('shapefileMap').setView([0.49649, 33.19050], 13);
 
+    L.tileLayer('https://cartodb-basemaps-a.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+    }).addTo(shapefileMap);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 19,
     }).addTo(hospitalMap);
@@ -76,11 +80,129 @@ document.addEventListener("DOMContentLoaded", function() {
             }
         });
     }
+    function getHospitalCategoryIcon(category) {
+        let svgIcon;
+        switch (category) {
+            case 'hospital':
+                svgIcon = 'images/icons/hospital_dark.svg';
+                break;
+            case 'clinic':
+                svgIcon = 'images/icons/hospital_light.svg';
+                break;
+            default:
+                svgIcon = 'images/icons/first_aid_light.svg';
+                break;
+        }
+        console.log(svgIcon);
+    
+        return L.divIcon({
+            html: `<img src="${svgIcon}" style="height: 16px; width: 16px;">`,
+            className: 'icon',
+            iconSize: [32, 32],
+            iconAnchor: [16, 16]
+        });
+    }
 
+    var legend = L.control({position: 'bottomright'});
+
+    legend.onAdd = function (map) {
+        var div = L.DomUtil.create('div', 'info legend');
+        var categories = ['hospital', 'clinic', 'pharmacy'];
+        var links = [
+            'images/icons/hospital_dark.svg',
+            'images/icons/hospital_light.svg',
+            'images/icons/first_aid_light.svg'
+        ];
+
+        categories.forEach(function(category, index) {
+            var img = document.createElement('img');
+            img.src = links[index];
+            img.style.height = '16px';
+            img.style.width = '16px';
+
+            var span = document.createElement('span');
+            span.style.backgroundColor = 'white';
+            span.appendChild(img);
+
+            var label = document.createElement('label');
+            label.innerHTML = ' ' + category + '<br>';
+            label.insertBefore(span, label.firstChild);
+
+            div.appendChild(label);
+        });
+
+        return div;
+    };
+
+    legend.addTo(hospitalMap);
+
+
+    var info = L.control();
+
+    info.onAdd = function (map) {
+        this._div = L.DomUtil.create('div', 'info'); // create a div with a class "info"
+        this.update();
+        return this._div;
+    };
+
+    // method that we will use to update the control based on feature properties passed
+    info.update = function (props) {
+        this._div.innerHTML = '<h4>Subcounty Name</h4>' +  (props ?
+            '<b>' + props.admin4Name_en + '</b>'
+            : 'Hover over an area');
+    };
+
+    info.addTo(shapefileMap);
+
+    var Shapefilegeojson;
+    function shapestyle(feature) {
+        return {
+            fillColor: '#3388ff',
+            weight: 2,
+            opacity: 1,
+            color: 'black',
+            dashArray: '5',
+            fillOpacity: 0.1
+        };
+    }
+
+    function highlightFeature(e) {
+        var layer = e.target;
+    
+        layer.setStyle({
+            weight: 5,
+            color: '#666',
+            dashArray: '',
+            fillOpacity: 0.7
+        });
+    
+        layer.bringToFront();
+        info.update(layer.feature.properties);
+    }
+    
+
+    function resetHighlight(e) {
+        Shapefilegeojson.resetStyle();
+        info.update();
+    }
+
+
+    
+    function onEachShapeFeature(feature, layer) {
+        layer.on({
+            mouseover: highlightFeature,
+            mouseout: resetHighlight,
+            click: function(e) {
+                shapefileMap.fitBounds(e.target.getBounds());
+            }
+        });
+    }
+    
+    
     function changetext(city) {
         const textpaths = cityData[city].text
         document.getElementById("building-viz-title").innerText = textpaths.building_visualization_title;
-
+        document.getElementById("building-viz-description").innerText = textpaths.buildings_viz_description;
     }
 
     function loadCityData(city) {
@@ -93,6 +215,19 @@ document.addEventListener("DOMContentLoaded", function() {
 
         // Change text content
         changetext(city);
+
+        // Update shapefile Map
+        shapefileMap.setView([cityobject.location[0], cityobject.location[1]], 11);
+        clearLayers(shapefileMap);
+        fetch(cityobject.shapefile)
+        .then(response => response.json())
+        .then(data => {
+            Shapefilegeojson = L.geoJSON(data, {
+                style: shapestyle,
+                onEachFeature: onEachShapeFeature
+            }).addTo(shapefileMap);
+            console.log("Shapefile loaded for", city);
+        });
 
         // Plotly graph
         const ctx = document.getElementById('cityGraph');
@@ -160,9 +295,14 @@ document.addEventListener("DOMContentLoaded", function() {
         .then(response => response.json())
         .then(data => {
             var geojson = L.geoJSON(data, {
-                onEachFeature: onEachFeature
-            }).addTo(hospitalMap);
-            console.log("Hospital data loaded for", city);
+                onEachFeature: onEachFeature,
+                pointToLayer: (feature, latlng) => {
+                    const category = feature.properties.amenity;
+                    const icon = getHospitalCategoryIcon(category);
+                    return L.marker(latlng, { icon: icon });
+                }
+                }).addTo(hospitalMap);
+                console.log("Hospital data loaded for", city);
             
             // Populate DataTable
             const tableData = data.features.map(feature =>
