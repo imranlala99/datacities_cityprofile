@@ -96,14 +96,21 @@
         <div id="city-profile-content" class="mt-8">
             <div id="Introduction">
                 <h2 id="intro-title">Introduction</h2>
-                <div id="shapefileMap"></div>
-                <div id="citydescription"></div>
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 20px;">
+                    <div id="shapefileMap"></div>
+                    <h3 id="citydescription" style="flex: 1;"></h3>
+                </div>
             </div>
             <div id="Buildings">
                 <h2 id="buildings-title">Buildings</h2>
                 <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 20px;">
                     <div id="graph-table-container" style="flex: 1;">
+                        <h3 id="building-description">Provided are visualizations of all buildings in the city, from 2016-2023. The map shows the growth in buildings over time. The graph quantitatively displays both the trend in area coverage, as well as the count of buildings over the course of the 8 years. The table gives a detailed view of this data.
+                        </h3>
                         <div id="cityGraph"></div>
+                        <div style="height: 10px;"></div>
+                        <hr>
+                        <div style="height: 10px;"></div>
                         <table id="cityTable" class="display" style="width:100%">
                             <thead>
                                 <tr>
@@ -185,7 +192,12 @@
             </div>
             <div id="Hospitals">
                 <h2>Hospitals</h2>
-                <div id="hospitalMap"></div>
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 20px;">
+                    <div style="flex: 1;">
+                        <h3 id="hospitals-description">Provided are visualizations of the health centers in the city. The map shows the various health centers, categorized by their type. The table gives a detailed view of this data, while the pie chart shows the overall share by the various categories.</h3>
+                    </div>
+                    <div id="hospitalMap"></div>
+                </div>
                 <div style="height: 10px;"></div>
                 <div id="hospitalProfileContent" class="flex justify-between items-center">
                     <table id="hospitalTable" class="display" style="flex: 1">
@@ -205,7 +217,12 @@
             </div>
             <div id="Schools">
                 <h2>Schools</h2>
-                <div id="schoolMap"></div>
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 20px;">
+                    <div style="flex: 1;">
+                        <h3 id="schools-description">Provided are visualizations of the schools in the city. The map shows the various schools, categorized by their type. The table gives a detailed view of this data, while the pie chart shows the overall share by the various categories.</h3>
+                    </div>
+                    <div id="schoolMap"></div>
+                </div>
                 <div style="height: 10px;"></div>
                 <div id="schoolProfileContent" class="flex justify-between items-center">
                     <table id="schoolTable" class="display" style="flex: 1">
@@ -225,7 +242,12 @@
             </div>
             <div id="Tourism">
                 <h2>Tourism</h2>
-                <div id="tourismMap"></div>
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 20px;">
+                    <div style="flex: 1;">
+                        <h3 id="tourism-description">Provided are visualizations of sites for tourism in the city. The map shows the various tourism-related entities, categorized by their type. The table gives a detailed view of this data, while the pie chart shows the overall share by the various categories.</h3>
+                    </div>
+                    <div id="tourismMap"></div>
+                </div>
                 <div style="height: 10px;"></div>
 
                 <div id="tourismProfileContent" class="flex justify-between items-center">

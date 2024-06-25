@@ -201,7 +201,8 @@ document.addEventListener("DOMContentLoaded", function() {
     
     function changetext(city) {
         const textpaths = cityData[city].text
-        document.getElementById("building-viz-title").innerText = textpaths.building_visualization_title;
+        document.getElementById("citydescription").innerText = textpaths.intro_description;
+        document.getElementById("building-viz-title").innerText = textpaths.buildings_viz_title;
         document.getElementById("building-viz-description").innerText = textpaths.buildings_viz_description;
     }
 
